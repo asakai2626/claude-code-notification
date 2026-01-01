@@ -47,8 +47,15 @@ RESULT_TEXT="不明"
 
 # transcript_pathがあれば会話内容を取得
 if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
-    # 最後のユーザーリクエストを取得（type: "user"）
-    REQUEST_TEXT=$(grep '"type":"user"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | jq -r '.message.content // empty' | head -c 200)
+    # 最後のユーザーリクエストを取得（type: "user"、テキストのみ）
+    # contentが配列の場合はtextタイプのみ抽出、文字列ならそのまま使用
+    REQUEST_TEXT=$(grep '"type":"user"' "$TRANSCRIPT_PATH" 2>/dev/null | tac | while read -r line; do
+        text=$(echo "$line" | jq -r '.message.content | if type == "array" then map(select(.type == "text") | .text) | join("") else . end // empty')
+        if [ -n "$text" ] && [ "$text" != "null" ]; then
+            echo "$text"
+            break
+        fi
+    done | head -c 200)
 
     # 最後のAssistant出力を取得（type: "assistant"）
     # contentが配列の場合はtextを抽出、文字列ならそのまま使用
