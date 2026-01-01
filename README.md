@@ -21,7 +21,7 @@ Discordアプリの通知をONにしておけば、iPhoneにプッシュ通知�
 ### Step 1: このリポジトリをクローン
 
 ```bash
-git clone https://github.com/your-username/claude-code-notification.git
+git clone https://github.com/asakai2626/claude-code-notification.git
 cd claude-code-notification
 ```
 
