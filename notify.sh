@@ -47,8 +47,8 @@ RESULT_TEXT="不明"
 
 # transcript_pathがあれば会話内容を取得
 if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
-    # 最初のユーザーリクエストを取得（type: "human"）
-    REQUEST_TEXT=$(grep -m1 '"type":"human"' "$TRANSCRIPT_PATH" 2>/dev/null | jq -r '.message.content // empty' | head -c 200)
+    # 最初のユーザーリクエストを取得（type: "user"）
+    REQUEST_TEXT=$(grep -m1 '"type":"user"' "$TRANSCRIPT_PATH" 2>/dev/null | jq -r '.message.content // empty' | head -c 200)
 
     # 最後のAssistant出力を取得（type: "assistant"）
     RESULT_TEXT=$(grep '"type":"assistant"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | jq -r '.message.content // empty' | head -c 200)
