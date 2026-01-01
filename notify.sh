@@ -23,7 +23,6 @@ fi
 ENABLED=$(jq -r '.enabled' "$CONFIG_FILE")
 WEBHOOK_URL=$(jq -r '.webhook_url' "$CONFIG_FILE")
 DISCORD_USER_ID=$(jq -r '.discord_user_id' "$CONFIG_FILE")
-DEFAULT_MESSAGE=$(jq -r '.notification_message' "$CONFIG_FILE")
 
 # 通知が無効なら終了
 if [ "$ENABLED" != "true" ]; then
@@ -36,12 +35,42 @@ if [ "$WEBHOOK_URL" = "YOUR_DISCORD_WEBHOOK_URL_HERE" ] || [ -z "$WEBHOOK_URL" ]
     exit 1
 fi
 
-# カスタムメッセージがあれば使用、なければデフォルト
-MESSAGE="${1:-$DEFAULT_MESSAGE}"
+# stdinからhook入力を読み取る（タイムアウト付き）
+HOOK_INPUT=$(timeout 1 cat 2>/dev/null || echo "{}")
+
+# transcript_pathを取得
+TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // empty')
+
+# デフォルトメッセージ
+REQUEST_TEXT="不明"
+RESULT_TEXT="不明"
+
+# transcript_pathがあれば会話内容を取得
+if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
+    # 最初のユーザーリクエストを取得（type: "human"）
+    REQUEST_TEXT=$(grep -m1 '"type":"human"' "$TRANSCRIPT_PATH" 2>/dev/null | jq -r '.message.content // empty' | head -c 200)
+
+    # 最後のAssistant出力を取得（type: "assistant"）
+    RESULT_TEXT=$(grep '"type":"assistant"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | jq -r '.message.content // empty' | head -c 200)
+
+    # 空の場合はデフォルト
+    [ -z "$REQUEST_TEXT" ] && REQUEST_TEXT="取得できませんでした"
+    [ -z "$RESULT_TEXT" ] && RESULT_TEXT="取得できませんでした"
+fi
+
+# メッセージを組み立て
+MESSAGE="【Claude Codeの作業が完了しました！】
+
+**リクエスト:**
+${REQUEST_TEXT}
+
+**結果:**
+${RESULT_TEXT}"
 
 # User IDが設定されていればメンション付き、なければ普通に送信
 if [ -n "$DISCORD_USER_ID" ] && [ "$DISCORD_USER_ID" != "YOUR_DISCORD_USER_ID_HERE" ] && [ "$DISCORD_USER_ID" != "null" ]; then
-    CONTENT="<@$DISCORD_USER_ID> $MESSAGE"
+    CONTENT="<@$DISCORD_USER_ID>
+$MESSAGE"
 else
     CONTENT="$MESSAGE"
 fi
