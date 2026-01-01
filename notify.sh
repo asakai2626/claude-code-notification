@@ -30,17 +30,19 @@ if [ "$WEBHOOK_URL" = "YOUR_DISCORD_WEBHOOK_URL_HERE" ] || [ -z "$WEBHOOK_URL" ]
     exit 1
 fi
 
-if [ "$DISCORD_USER_ID" = "YOUR_DISCORD_USER_ID_HERE" ] || [ -z "$DISCORD_USER_ID" ]; then
-    echo "エラー: discord_user_id を config.json に設定してください"
-    exit 1
-fi
-
 # カスタムメッセージがあれば使用、なければデフォルト
 MESSAGE="${1:-$DEFAULT_MESSAGE}"
 
-# Discord Webhookに送信（ユーザーをメンション）
+# User IDが設定されていればメンション付き、なければ普通に送信
+if [ -n "$DISCORD_USER_ID" ] && [ "$DISCORD_USER_ID" != "YOUR_DISCORD_USER_ID_HERE" ] && [ "$DISCORD_USER_ID" != "null" ]; then
+    CONTENT="<@$DISCORD_USER_ID> $MESSAGE"
+else
+    CONTENT="$MESSAGE"
+fi
+
+# Discord Webhookに送信
 JSON_PAYLOAD=$(jq -n \
-    --arg content "<@$DISCORD_USER_ID> $MESSAGE" \
+    --arg content "$CONTENT" \
     '{content: $content}')
 
 RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \

@@ -47,15 +47,15 @@ cd claude-code-notification
 
 > このURLをメモしておいてください
 
-#### 2-3. User IDを取得
+#### 2-3. User IDを取得（オプション）
+
+メンション通知が必要な場合のみ設定してください。設定しない場合は普通にメッセージが送信されます。
 
 1. 左下の**歯車アイコン**（ユーザー設定）をクリック
 2. 「**詳細設定**」をクリック
 3. 「**開発者モード**」を**ON**にする
 4. 設定を閉じて、自分のアイコンを**右クリック**
 5. 「**ユーザーIDをコピー**」をクリック
-
-> このIDもメモしておいてください（メンション通知に使います）
 
 ### Step 3: セットアップスクリプトを実行
 
@@ -74,7 +74,7 @@ Discord Webhook URLを入力してください:
 → Step 2-2でコピーしたURLを貼り付け
 
 Discord User IDを入力してください:
-→ Step 2-3でコピーしたIDを貼り付け
+→ メンションが必要ならIDを貼り付け、不要ならそのままEnter
 
 通知メッセージを入力してください:
 → そのままEnterでOK（カスタマイズも可能）
@@ -159,8 +159,8 @@ nano ~/.claude/settings.json
 
 | 項目 | 説明 |
 |------|------|
-| `webhook_url` | Discord Webhook URL |
-| `discord_user_id` | 通知を受け取るユーザーのID（メンションされます） |
+| `webhook_url` | Discord Webhook URL（必須） |
+| `discord_user_id` | メンションするユーザーのID（空欄でもOK） |
 | `notification_message` | デフォルトの通知メッセージ |
 
 ---
@@ -176,9 +176,8 @@ brew install jq
 ### 通知が届かない
 
 1. Webhook URLが正しいか確認
-2. User IDが正しいか確認
-3. テスト送信を試す: `./notify.sh "テスト"`
-4. Discordアプリの通知設定を確認
+2. テスト送信を試す: `./notify.sh "テスト"`
+3. Discordアプリの通知設定を確認
 
 ### Claude Codeで自動通知されない
 
