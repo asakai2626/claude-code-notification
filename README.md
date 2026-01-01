@@ -93,7 +93,7 @@ Discord User IDを入力してください:
 nano ~/.claude/settings.json
 ```
 
-以下の内容を追加してください：
+以下の内容を追加してください（`/path/to/` は実際のパスに置き換え）：
 
 ```json
 {
@@ -109,9 +109,32 @@ nano ~/.claude/settings.json
         ]
       }
     ]
+  },
+  "commands": {
+    "notify-on": {
+      "description": "Discord通知をオンにする",
+      "command": "/path/to/claude-code-notification/toggle.sh on"
+    },
+    "notify-off": {
+      "description": "Discord通知をオフにする",
+      "command": "/path/to/claude-code-notification/toggle.sh off"
+    },
+    "notify-status": {
+      "description": "Discord通知の状態を確認",
+      "command": "/path/to/claude-code-notification/toggle.sh status"
+    }
   }
 }
 ```
+
+**設定の説明：**
+
+| 設定 | 説明 |
+|------|------|
+| `hooks.Stop` | Claude Codeが作業を終了したときに `notify.sh` を実行して通知を送信 |
+| `commands.notify-on` | `/notify-on` コマンドで通知をオンにする |
+| `commands.notify-off` | `/notify-off` コマンドで通知をオフにする |
+| `commands.notify-status` | `/notify-status` コマンドで現在の状態を確認 |
 
 > `/path/to/` の部分は実際のパスに置き換えてください
 > 例: `/Users/username/claude-code-notification/notify.sh`
@@ -151,28 +174,13 @@ nano ~/.claude/settings.json
 
 ### Claude Codeからスラッシュコマンドで切り替える
 
-`~/.claude/settings.json` に以下を追加すると、Claude Code内で `/notify-on` `/notify-off` が使えるようになります：
+Step 4で設定済みの場合、Claude Code内で以下のコマンドが使えます：
 
-```json
-{
-  "commands": {
-    "notify-on": {
-      "description": "Discord通知をオンにする",
-      "command": "/path/to/claude-code-notification/toggle.sh on"
-    },
-    "notify-off": {
-      "description": "Discord通知をオフにする",
-      "command": "/path/to/claude-code-notification/toggle.sh off"
-    },
-    "notify-status": {
-      "description": "Discord通知の状態を確認",
-      "command": "/path/to/claude-code-notification/toggle.sh status"
-    }
-  }
-}
-```
-
-> `/path/to/` は実際のパスに置き換えてください
+| コマンド | 説明 |
+|----------|------|
+| `/notify-on` | 通知をオンにする |
+| `/notify-off` | 通知をオフにする |
+| `/notify-status` | 現在の状態を確認 |
 
 ### 手動で通知を送る
 
