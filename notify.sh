@@ -20,9 +20,15 @@ if ! command -v jq &> /dev/null; then
 fi
 
 # 設定を読み込み
+ENABLED=$(jq -r '.enabled' "$CONFIG_FILE")
 WEBHOOK_URL=$(jq -r '.webhook_url' "$CONFIG_FILE")
 DISCORD_USER_ID=$(jq -r '.discord_user_id' "$CONFIG_FILE")
 DEFAULT_MESSAGE=$(jq -r '.notification_message' "$CONFIG_FILE")
+
+# 通知が無効なら終了
+if [ "$ENABLED" != "true" ]; then
+    exit 0
+fi
 
 # 設定の検証
 if [ "$WEBHOOK_URL" = "YOUR_DISCORD_WEBHOOK_URL_HERE" ] || [ -z "$WEBHOOK_URL" ]; then

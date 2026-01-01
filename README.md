@@ -133,6 +133,47 @@ nano ~/.claude/settings.json
 
 セットアップ完了後は、Claude Codeが作業を終了するたびに自動で通知が届きます。
 
+### 通知のオンオフを切り替える
+
+```bash
+# オンにする
+./toggle.sh on
+
+# オフにする
+./toggle.sh off
+
+# 現在の状態を確認
+./toggle.sh status
+
+# トグル（オン↔オフを切り替え）
+./toggle.sh
+```
+
+### Claude Codeからスラッシュコマンドで切り替える
+
+`~/.claude/settings.json` に以下を追加すると、Claude Code内で `/notify-on` `/notify-off` が使えるようになります：
+
+```json
+{
+  "commands": {
+    "notify-on": {
+      "description": "Discord通知をオンにする",
+      "command": "/path/to/claude-code-notification/toggle.sh on"
+    },
+    "notify-off": {
+      "description": "Discord通知をオフにする",
+      "command": "/path/to/claude-code-notification/toggle.sh off"
+    },
+    "notify-status": {
+      "description": "Discord通知の状態を確認",
+      "command": "/path/to/claude-code-notification/toggle.sh status"
+    }
+  }
+}
+```
+
+> `/path/to/` は実際のパスに置き換えてください
+
 ### 手動で通知を送る
 
 ```bash
@@ -151,6 +192,7 @@ nano ~/.claude/settings.json
 
 ```json
 {
+  "enabled": true,
   "webhook_url": "https://discord.com/api/webhooks/...",
   "discord_user_id": "123456789012345678",
   "notification_message": "Claude Codeの作業が完了しました！"
@@ -159,6 +201,7 @@ nano ~/.claude/settings.json
 
 | 項目 | 説明 |
 |------|------|
+| `enabled` | 通知のオンオフ（`true` / `false`） |
 | `webhook_url` | Discord Webhook URL（必須） |
 | `discord_user_id` | メンションするユーザーのID（空欄でもOK） |
 | `notification_message` | デフォルトの通知メッセージ |
