@@ -1,0 +1,5 @@
+{
+  "webhook_url": "YOUR_DISCORD_WEBHOOK_URL_HERE",
+  "discord_user_id": "YOUR_DISCORD_USER_ID_HERE",
+  "notification_message": "Claude Codeの作業が完了しました！"
+}
