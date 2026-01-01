@@ -57,30 +57,40 @@ cd claude-code-notification
 4. 設定を閉じて、**左下の自分のアイコン**を**右クリック**
 5. 「**ユーザーIDをコピー**」をクリック
 
-### Step 3: セットアップスクリプトを実行
+### Step 3: 設定ファイルを編集
 
 ```bash
 # jqをインストール（まだの場合）
 brew install jq
-
-# セットアップを実行
-./setup.sh
 ```
 
-質問に順番に答えてください：
+`config.example.json` をコピーして `config.json` を作成し、編集します：
 
+```bash
+cp config.example.json config.json
+nano config.json
 ```
-Discord Webhook URLを入力してください:
-→ Step 2-2でコピーしたURLを貼り付け
 
-Discord User IDを入力してください:
-→ メンションが必要ならIDを貼り付け、不要ならそのままEnter
+```json
+{
+  "enabled": true,
+  "webhook_url": "ここにStep 2-2でコピーしたURLを貼り付け",
+  "discord_user_id": "",
+  "notification_message": "Claude Codeの作業が完了しました！"
+}
+```
 
-通知メッセージを入力してください:
-→ そのままEnterでOK（カスタマイズも可能）
+| 項目 | 説明 |
+|------|------|
+| `enabled` | 通知のオンオフ（`true` / `false`） |
+| `webhook_url` | Discord Webhook URL（必須） |
+| `discord_user_id` | メンションが必要なら Step 2-3 のIDを入力（不要なら空欄） |
+| `notification_message` | 通知メッセージ（お好みで変更可） |
 
-テスト通知を送信しますか？ (y/n)
-→ y を入力
+保存したら、テスト送信してみましょう：
+
+```bash
+./notify.sh "テスト通知"
 ```
 
 **Discordに通知が届いたら成功です！**
@@ -191,28 +201,6 @@ Step 4で設定済みの場合、Claude Code内で以下のコマンドが使え
 # カスタムメッセージで送信
 ./notify.sh "ビルドが完了しました"
 ```
-
----
-
-## 設定ファイル
-
-`config.json` で設定を変更できます：
-
-```json
-{
-  "enabled": true,
-  "webhook_url": "https://discord.com/api/webhooks/...",
-  "discord_user_id": "123456789012345678",
-  "notification_message": "Claude Codeの作業が完了しました！"
-}
-```
-
-| 項目 | 説明 |
-|------|------|
-| `enabled` | 通知のオンオフ（`true` / `false`） |
-| `webhook_url` | Discord Webhook URL（必須） |
-| `discord_user_id` | メンションするユーザーのID（空欄でもOK） |
-| `notification_message` | デフォルトの通知メッセージ |
 
 ---
 
