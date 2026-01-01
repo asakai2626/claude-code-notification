@@ -35,8 +35,8 @@ if [ "$WEBHOOK_URL" = "YOUR_DISCORD_WEBHOOK_URL_HERE" ] || [ -z "$WEBHOOK_URL" ]
     exit 1
 fi
 
-# stdinからhook入力を読み取る（タイムアウト付き）
-HOOK_INPUT=$(timeout 1 cat 2>/dev/null || echo "{}")
+# stdinからhook入力を読み取る
+HOOK_INPUT=$(cat)
 
 # transcript_pathを取得
 TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // empty')
@@ -51,7 +51,8 @@ if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
     REQUEST_TEXT=$(grep -m1 '"type":"user"' "$TRANSCRIPT_PATH" 2>/dev/null | jq -r '.message.content // empty' | head -c 200)
 
     # 最後のAssistant出力を取得（type: "assistant"）
-    RESULT_TEXT=$(grep '"type":"assistant"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | jq -r '.message.content // empty' | head -c 200)
+    # contentが配列の場合はtextを抽出、文字列ならそのまま使用
+    RESULT_TEXT=$(grep '"type":"assistant"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1 | jq -r '.message.content | if type == "array" then map(select(.type == "text") | .text) | join("") else . end // empty' | head -c 200)
 
     # 空の場合はデフォルト
     [ -z "$REQUEST_TEXT" ] && REQUEST_TEXT="取得できませんでした"
