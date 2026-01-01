@@ -49,7 +49,8 @@ RESULT_TEXT="不明"
 if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
     # 最後のユーザーリクエストを取得（type: "user"、文字列のcontentのみ）
     # tool_resultは配列なので、contentが文字列のメッセージのみを取得
-    REQUEST_TEXT=$(grep '"type":"user"' "$TRANSCRIPT_PATH" 2>/dev/null | jq -r 'select(.message.content | type == "string") | .message.content' | tail -1 | head -c 200)
+    # tail -2 | head -1 で最後から2番目を取得（最後は通知内容の貼り付けの可能性）
+    REQUEST_TEXT=$(grep '"type":"user"' "$TRANSCRIPT_PATH" 2>/dev/null | jq -r 'select(.message.content | type == "string") | .message.content' | tail -2 | head -1 | head -c 200)
 
     # 最後のAssistant出力を取得（type: "assistant"）
     # contentが配列の場合はtextを抽出、文字列ならそのまま使用
